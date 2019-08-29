@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -14,12 +15,15 @@ public class ControllerClient {
 
     @FXML
     TextArea inputFromServer;
+    @FXML
     TextArea msg;
+    @FXML
     TextField name;
 
 
     Socket socket;
     BufferedReader in;
+    ObjectOutputStream out;
 
 
     //Receive MSG object send String with msg and name back.
@@ -29,8 +33,9 @@ public class ControllerClient {
             System.out.println("CONNECT?");
             socket = new Socket("localhost",1);
             System.out.println("connect");
+
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            setInputFromServer();
+            out = new ObjectOutputStream(socket.getOutputStream());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -50,6 +55,16 @@ public class ControllerClient {
     public void setInputFromServer() {
         try {
             inputFromServer.appendText(in.readLine() + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessage(){
+        Message message = writeMessage();
+        try {
+            out.writeObject(message);
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
