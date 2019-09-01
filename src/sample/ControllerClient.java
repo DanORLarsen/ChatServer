@@ -5,10 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -24,7 +21,7 @@ public class ControllerClient {
     public Button btn;
 
     public Socket socket;
-    public BufferedReader in;
+    public DataInputStream in;
     public ObjectOutputStream out;
 
 
@@ -36,7 +33,7 @@ public class ControllerClient {
             socket = new Socket("localhost",1);
             System.out.println("connect");
 
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            in = new DataInputStream((socket.getInputStream()));
 
             out = new ObjectOutputStream(socket.getOutputStream());
 
@@ -52,7 +49,8 @@ public class ControllerClient {
 
     public void setInputFromServer() {
         try {
-            inputFromServer.appendText(in.readLine() + "\n");
+            String msg = in.readUTF();
+            inputFromServer.appendText(msg + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

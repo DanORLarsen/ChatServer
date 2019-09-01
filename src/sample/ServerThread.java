@@ -1,15 +1,8 @@
 package sample;
 
-import sample.Message;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Timestamp;
-import java.util.Date;
 
 import static sample.ControllerServer.sockets;
 
@@ -23,20 +16,19 @@ public class ServerThread extends Thread {
         try {
             ServerSocket serverSocket = new ServerSocket(1);
             socket = serverSocket.accept();
-            sockets.add(socket);
             while (true) {
                 //DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 in = new ObjectInputStream(socket.getInputStream());
-
+                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                sockets.add(new ClientConnected(dataOutputStream,in));
                 Message message = (Message)in.readObject();
                 String msg = message.getName()+ ": " + message.getMsg();
+                System.out.println(msg);
                 System.out.println("Message created");
                 for (int i = 0; i < sockets.size(); i++) {
-                    DataOutputStream out = new DataOutputStream(sockets.get(i).getOutputStream());
+                    sockets.get(i).getDataOutputStream().writeChars(msg);
+                    sockets.get(i).getDataOutputStream().flush();
                     System.out.println("message sent");
-                    out.writeChars(msg);
-                    System.out.println("Message written");
-                    out.flush();
                 }
             }
 
