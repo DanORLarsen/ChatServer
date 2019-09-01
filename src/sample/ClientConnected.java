@@ -1,6 +1,7 @@
 package sample;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
@@ -24,5 +25,12 @@ public class ClientConnected {
 
     public DataOutputStream getDataOutputStream() {
         return dataOutputStream;
+    }
+    public void sendMessage(String msg){
+        try {
+            dataOutputStream.writeChars(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

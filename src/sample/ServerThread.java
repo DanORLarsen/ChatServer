@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static sample.ControllerServer.sockets;
+import static sample.ControllerServer.clients;
 
 public class ServerThread extends Thread {
     protected Socket socket;
@@ -20,15 +20,14 @@ public class ServerThread extends Thread {
                 //DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 in = new ObjectInputStream(socket.getInputStream());
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                sockets.add(new ClientConnected(dataOutputStream,in));
+                clients.add(new ClientConnected(dataOutputStream,in));
                 Message message = (Message)in.readObject();
                 String msg = message.getName()+ ": " + message.getMsg();
                 System.out.println(msg);
                 System.out.println("Message created");
-                for (int i = 0; i < sockets.size(); i++) {
-                    sockets.get(i).getDataOutputStream().writeChars(msg);
-                    sockets.get(i).getDataOutputStream().flush();
-                    System.out.println("message sent");
+                for (int i = 0; i < clients.size(); i++) {
+                    clients.get(i).sendMessage(msg);
+                    System.out.println("Message sent");
                 }
             }
 
