@@ -70,7 +70,6 @@ public class ControllerClient {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-
             while(true){
                 System.out.println("Waiting for message");
                 setInputFromServer();
