@@ -74,6 +74,7 @@ public class ControllerClient {
         public void run() {
 
             while(true){
+                System.out.println("Waiting for message");
                 setInputFromServer();
             }
         }
