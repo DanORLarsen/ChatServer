@@ -8,15 +8,31 @@ import java.net.Socket;
 public class ClientConnected {
     DataOutputStream dataOutputStream;
     ObjectInputStream in;
+    Socket socket;
+    DataOutputStream clientOut;
 
 
     public ClientConnected(DataOutputStream dataOutputStream) {
         this.dataOutputStream = dataOutputStream;
     }
 
-    public ClientConnected(DataOutputStream dataOutputStream, ObjectInputStream in) {
+    public ClientConnected(DataOutputStream dataOutputStream, ObjectInputStream in, Socket socket) {
         this.dataOutputStream = dataOutputStream;
         this.in = in;
+        this.socket = socket;
+        try {
+            this.clientOut = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public DataOutputStream getClientOut() {
+        return clientOut;
     }
 
     public ObjectInputStream getIn() {
@@ -28,7 +44,10 @@ public class ClientConnected {
     }
     public void sendMessage(String msg){
         try {
+            clientOut.writeChars(msg);
+            clientOut.flush();
             dataOutputStream.writeChars(msg);
+            dataOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

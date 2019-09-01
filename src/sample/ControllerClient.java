@@ -73,6 +73,7 @@ public class ControllerClient {
             while(true){
                 System.out.println("Waiting for message");
                 setInputFromServer();
+                System.out.println("No longer waiting");
             }
         }
     };

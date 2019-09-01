@@ -20,7 +20,7 @@ public class ServerThread extends Thread {
                 //DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 in = new ObjectInputStream(socket.getInputStream());
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                clients.add(new ClientConnected(dataOutputStream,in));
+                clients.add(new ClientConnected(dataOutputStream,in, socket));
                 Message message = (Message)in.readObject();
                 String msg = message.getName()+ ": " + message.getMsg();
                 System.out.println(msg);
