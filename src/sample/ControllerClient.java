@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -14,16 +15,17 @@ import java.net.UnknownHostException;
 public class ControllerClient {
 
     @FXML
-    TextArea inputFromServer;
+   public TextArea inputFromServer;
     @FXML
-    TextArea msg;
+    public TextArea msg;
     @FXML
-    TextField name;
+   public TextField name;
+    @FXML
+    public Button btn;
 
-
-    Socket socket;
-    BufferedReader in;
-    ObjectOutputStream out;
+    public Socket socket;
+    public BufferedReader in;
+    public ObjectOutputStream out;
 
 
     //Receive MSG object send String with msg and name back.
@@ -35,23 +37,19 @@ public class ControllerClient {
             System.out.println("connect");
 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
             out = new ObjectOutputStream(socket.getOutputStream());
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                while(true){
-                setInputFromServer();
-                }
-            }
-        };
-        Thread thread = new Thread(runnable);
-        thread.run();
+        new Thread(runnable).start();
+
     }
+
+
     public void setInputFromServer() {
         try {
             inputFromServer.appendText(in.readLine() + "\n");
@@ -59,21 +57,33 @@ public class ControllerClient {
             e.printStackTrace();
         }
     }
-
+//Actually sends message object to server, and uses the writeMessage to create the message that is send.
     public void sendMessage(){
         Message message = writeMessage();
         try {
             out.writeObject(message);
             out.flush();
+            System.out.println("message  sent to server");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+
+            while(true){
+                setInputFromServer();
+            }
+        }
+    };
+
     public Message writeMessage(){
         Message message = new Message();
-        message.setName(name.toString());
-        message.setMsg(msg.toString());
+        message.setName(name.getText());
+        System.out.println(name.getText());
+        message.setMsg(msg.getText());
         return message;
     }
 }

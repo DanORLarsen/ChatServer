@@ -10,7 +10,7 @@ public class Exercise31_10Server extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sampleClient.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("sampleServer.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.show();
