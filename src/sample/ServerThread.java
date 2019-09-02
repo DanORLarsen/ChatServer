@@ -11,20 +11,22 @@ public class ServerThread extends Thread {
     ServerSocket serverSocket;
 
     ObjectInputStream in;
-    //Server waits for Message object from client, when it gets it. it 
-    public void run(){
+
+    //Server waits for Message object from client, when it gets it. it
+    public void run() {
 
         try {
             serverSocket = new ServerSocket(1);
             socket = serverSocket.accept();
             new Thread(runnable).start();
+
+            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+
+            clients.add(new ClientConnected(dataOutputStream, in, socket));
             while (true) {
-                //DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                in = new ObjectInputStream(socket.getInputStream());
-                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                clients.add(new ClientConnected(dataOutputStream,in, socket));
-                Message message = (Message)in.readObject();
-                String msg = message.getName()+ ": " + message.getMsg();
+                Message message = (Message) in.readObject();
+                String msg = message.getName() + ": " + message.getMsg();
                 System.out.println(msg);
                 System.out.println("Message created");
                 for (int i = 0; i < clients.size(); i++) {
@@ -49,7 +51,7 @@ public class ServerThread extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            while (true) {
+
                 //DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                 try {
                     in = new ObjectInputStream(socket.getInputStream());
@@ -62,24 +64,26 @@ public class ServerThread extends Thread {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                clients.add(new ClientConnected(dataOutputStream,in, socket));
+                clients.add(new ClientConnected(dataOutputStream, in, socket));
                 Message message = null;
-                try {
-                    message = (Message)in.readObject();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-                String msg = message.getName()+ ": " + message.getMsg();
-                System.out.println(msg);
-                System.out.println("Message created");
-                for (int i = 0; i < clients.size(); i++) {
-                    clients.get(i).sendMessage(msg);
-                    System.out.println("Message sent");
+                while (true) {
+                    try {
+                        message = (Message) in.readObject();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    String msg = message.getName() + ": " + message.getMsg();
+                    System.out.println(msg);
+                    System.out.println("Message created");
+                    for (int i = 0; i < clients.size(); i++) {
+                        clients.get(i).sendMessage(msg);
+                        System.out.println("Message sent");
+                    }
                 }
             }
-        }
+
     };
 
 
