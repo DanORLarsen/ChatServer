@@ -33,9 +33,8 @@ public class ControllerClient {
             socket = new Socket("localhost",1);
             System.out.println("connect");
 
-            in = new DataInputStream((socket.getInputStream()));
-
             out = new ObjectOutputStream(socket.getOutputStream());
+            in = new DataInputStream((socket.getInputStream()));
 
         } catch (UnknownHostException e) {
             e.printStackTrace();

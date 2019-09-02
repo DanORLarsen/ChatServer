@@ -5,23 +5,23 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-public class ClientConnected {
+public class ClientConnected implements Runnable{
     DataOutputStream dataOutputStream;
     ObjectInputStream in;
     Socket socket;
     DataOutputStream clientOut;
+    private ClientConnectedListener listener;
 
-
-    public ClientConnected(DataOutputStream dataOutputStream) {
-        this.dataOutputStream = dataOutputStream;
+    public interface ClientConnectedListener{
+        void newMessage(String sender, String msg);
     }
 
-    public ClientConnected(DataOutputStream dataOutputStream, ObjectInputStream in, Socket socket) {
-        this.dataOutputStream = dataOutputStream;
-        this.in = in;
-        this.socket = socket;
+    public ClientConnected(Socket socket, ClientConnectedListener listener) {
+        this.listener = listener;
         try {
-            this.clientOut = new DataOutputStream(socket.getOutputStream());
+            this.socket = socket;
+        dataOutputStream = new DataOutputStream(socket.getOutputStream());
+        in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,6 +47,20 @@ public class ClientConnected {
             dataOutputStream.writeUTF(msg);
             dataOutputStream.flush();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            while(true) {
+                Message message = (Message) in.readObject();
+                listener.newMessage(message.getName(), message.getMsg());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
