@@ -44,9 +44,7 @@ public class ClientConnected {
     }
     public void sendMessage(String msg){
         try {
-            clientOut.writeChars(msg);
-            clientOut.flush();
-            dataOutputStream.writeChars(msg);
+            dataOutputStream.writeUTF(msg);
             dataOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
