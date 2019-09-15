@@ -46,16 +46,20 @@ public class ControllerClient {
     }
 
 
-    public void setInputFromServer() {
+    public void setInputFromServer() throws Exception {
         try {
             String msg = in.readUTF();
-            inputFromServer.appendText(msg + "\n");
+            Message d = new Message();
+            System.out.println(msg);
+            //Decrypt incoming message
+            String decrypted = d.decrypt(msg);
+            inputFromServer.appendText(decrypted + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 //Actually sends message object to server, and uses the writeMessage to create the message that is send.
-    public void sendMessage(){
+    public void sendMessage() throws Exception {
         Message message = writeMessage();
         try {
             out.writeObject(message);
@@ -71,17 +75,22 @@ public class ControllerClient {
         public void run() {
             while(true){
                 System.out.println("Waiting for message");
-                setInputFromServer();
+                try {
+                    setInputFromServer();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 System.out.println("No longer waiting");
             }
         }
     };
 
-    public Message writeMessage(){
+    public Message writeMessage() throws Exception {
         Message message = new Message();
         message.setName(name.getText());
         System.out.println(name.getText());
-        message.setMsg(msg.getText());
+        //Encrypting the message the user want to send
+        message.setMsg(message.encrypt(msg.getText()));
         return message;
     }
 }

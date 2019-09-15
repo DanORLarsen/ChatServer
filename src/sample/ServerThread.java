@@ -33,10 +33,10 @@ public class ServerThread extends Thread implements ClientConnected.ClientConnec
 
     }
 
-
+//Sends encrypted message to other clients
     @Override
     public void newMessage(String sender, String msg) {
-        String message = sender + ": " + msg;
+        String message = msg;
         System.out.println(message);
         System.out.println("Message created");
         for (int i = 0; i < clients.size(); i++) {
